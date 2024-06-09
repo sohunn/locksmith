@@ -17,4 +17,5 @@ export const vollkorn = Vollkorn({
 export const honk = Honk({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });

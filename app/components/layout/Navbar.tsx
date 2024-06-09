@@ -11,14 +11,16 @@ const Navbar = () => {
     <nav className="py-4 bg-base-200 ">
       <div className="container w-[90%] max-w-[1400px] mx-auto">
         <div className="flex justify-between items-center flex-wrap">
-          <div className="flex items-center gap-1">
-            <InlineIcon
-              icon="flat-color-icons:lock"
-              width="1.2em"
-              height="1.2em"
-            />
-            <h1>Locksmith</h1>
-          </div>
+          <Link href={"/"}>
+            <div className="flex items-center gap-1">
+              <InlineIcon
+                icon="flat-color-icons:lock"
+                width="1.2em"
+                height="1.2em"
+              />
+              <h1>Locksmith</h1>
+            </div>
+          </Link>
 
           <label className="btn btn-circle swap swap-rotate md:hidden">
             {/* this hidden checkbox controls the state */}
@@ -82,21 +84,21 @@ const Navbar = () => {
             isExpanded ? "flex flex-col gap-2 mt-2" : "hidden"
           }`}
         >
-          <li>
+          <li onClick={() => setIsExpanded(false)}>
             <Link href={"/"}>Home</Link>
           </li>
-          <li>
+          <li onClick={() => setIsExpanded(false)}>
             <Link href={"/about"}>About</Link>
           </li>
-          <li>
+          <li onClick={() => setIsExpanded(false)}>
             <Link href={"/contact"}>Contact</Link>
           </li>
-          <li>
+          <li onClick={() => setIsExpanded(false)}>
             <Link href={"/login"}>
               <button className="btn btn-primary rounded-md">Login</button>
             </Link>
           </li>
-          <li>
+          <li onClick={() => setIsExpanded(false)}>
             <Link href={"/register"}>
               <button className="btn btn-secondary rounded-md">Register</button>
             </Link>

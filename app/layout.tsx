@@ -1,7 +1,9 @@
 import "./globals.css";
 // Ubuntu for the headings, Vollkorn for the body
 import { ubuntu, vollkorn } from "./ui/fonts";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
+import { GlobalProvider } from "./contexts/global";
+import Alert from "./components/layout/Alert";
 
 export default function RootLayout({
   children,
@@ -11,8 +13,11 @@ export default function RootLayout({
   return (
     <html data-theme="sunset" lang="en">
       <body className={`${ubuntu.variable} ${vollkorn.variable} antialiased`}>
-        <Navbar />
-        {children}
+        <GlobalProvider>
+          <Navbar />
+          <Alert />
+          {children}
+        </GlobalProvider>
       </body>
     </html>
   );
