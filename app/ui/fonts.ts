@@ -1,4 +1,4 @@
-import { Ubuntu, Vollkorn, Honk, Bungee_Spice } from "next/font/google";
+import { Ubuntu, Vollkorn, Honk } from "next/font/google";
 
 export const ubuntu = Ubuntu({
   subsets: ["latin"],

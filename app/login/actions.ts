@@ -2,37 +2,21 @@
 
 import { z } from "zod";
 import verifyDBConnection from "../database/init";
-import { RedirectType, redirect } from "next/navigation";
 import userModel from "../database/models/User";
-import bcrypt from "bcrypt";
+import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { RedirectType, redirect } from "next/navigation";
 
-export default async function registerUser(
-  _prevState: any,
-  formData: FormData
-) {
+export default async function loginUser(_prevState: any, formData: FormData) {
   const formFields = {
-    username: formData.get("username") as string,
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
 
-  const specialCharRegex = /[!@#$%^&*]/g;
-  if (!specialCharRegex.test(formFields.password)) {
-    return {
-      message:
-        "Password must contain at least one special character from [! @ # $ % ^ & *]",
-    };
-  }
-
   const schema = z.object({
     email: z.string().email("Invalid email provided"),
-    username: z
-      .string()
-      .min(4, "Username must be at least 4 characters long")
-      .max(16, "Username must be at most 16 characters long"),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters long")
@@ -40,6 +24,7 @@ export default async function registerUser(
   });
 
   const result = schema.safeParse(formFields);
+
   if (!result.success) {
     return {
       message: result.error.errors[0].message,
@@ -48,23 +33,23 @@ export default async function registerUser(
 
   try {
     await verifyDBConnection();
-    const existingUser = await userModel
+    const user = await userModel
       .findOne({ email: formFields.email })
       .lean()
       .exec();
 
-    if (existingUser) {
+    if (!user) {
       return {
-        message: "A user with that email already exists",
+        message: "Invalid credentials",
       };
     }
 
-    const hashedPassword = await bcrypt.hash(formFields.password, 10);
-    const user = await userModel.create({
-      email: formFields.email,
-      password: hashedPassword,
-      username: formFields.username,
-    });
+    const match = await compare(formFields.password, user.password);
+    if (!match) {
+      return {
+        message: "Invalid credentials",
+      };
+    }
 
     const payload = {
       id: user._id,
@@ -79,7 +64,8 @@ export default async function registerUser(
       path: "/",
       secure: process.env.NODE_ENV === "production",
     });
-    revalidatePath("/register");
+
+    revalidatePath("/login");
     redirect("/", RedirectType.replace);
   } catch (err) {
     throw err;

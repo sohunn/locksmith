@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import { Document, Model, Schema, Types, model, models } from "mongoose";
 import { User } from "../../types";
 
 const userSchema = new Schema<User>({
@@ -9,5 +9,17 @@ const userSchema = new Schema<User>({
 });
 
 // prevent HMR from overwriting the model
-const userModel = models.users || model<User>("users", userSchema);
+const userModel =
+  (models.users as Model<
+    User,
+    {},
+    {},
+    {},
+    Document<unknown, {}, User> &
+      User & {
+        _id: Types.ObjectId;
+      },
+    any
+  >) || model<User>("users", userSchema);
+
 export default userModel;
