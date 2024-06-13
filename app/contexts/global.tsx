@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createContext } from "react";
-import { AlertStruct, User } from "../types";
+import { AlertStruct } from "../types";
 
 type ContextProps = {
-  user: User | null;
+  isAuthenticated: boolean;
   alert: AlertStruct | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   setAlert: (alert: AlertStruct) => void;
 };
 
@@ -18,8 +18,20 @@ export const GlobalProvider = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setAuthenticated] = useState(false);
   const [alert, _setAlert] = useState<AlertStruct | null>(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const response = await fetch("/api/auth/isAuthenticated");
+      if (response.ok) {
+        const payload = (await response.json()) as { isAuthenticated: boolean };
+        setAuthenticated(payload.isAuthenticated);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const setAlert = (alert: AlertStruct) => {
     _setAlert(alert);
@@ -29,7 +41,9 @@ export const GlobalProvider = ({
   };
 
   return (
-    <GlobalContext.Provider value={{ user, setUser, alert, setAlert }}>
+    <GlobalContext.Provider
+      value={{ isAuthenticated, setAuthenticated, alert, setAlert }}
+    >
       {children}
     </GlobalContext.Provider>
   );

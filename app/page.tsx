@@ -1,15 +1,13 @@
-"use client";
-
-// import { Metadata } from "next";
 import Image from "next/image";
 import { honk } from "./ui/fonts";
 import Link from "next/link";
+import { Metadata } from "next";
 
-// export const metadata: Metadata = {
-//   title: "Locksmith - Home",
-//   description:
-//     "Locksmith is a password manager that provides state of the art security by encrypting your passwords the way you want it.",
-// };
+export const metadata: Metadata = {
+  title: "Locksmith - Home",
+  description:
+    "Locksmith is a password manager that provides state of the art security by encrypting your passwords the way you want it.",
+};
 
 export default function Home() {
   return (

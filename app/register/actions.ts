@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 import verifyDBConnection from "../database/init";
-import { RedirectType, redirect } from "next/navigation";
 import userModel from "../database/models/User";
 import bcrypt from "bcrypt";
 import { sign } from "jsonwebtoken";
@@ -21,10 +20,7 @@ export default async function registerUser(
 
   const specialCharRegex = /[!@#$%^&*]/g;
   if (!specialCharRegex.test(formFields.password)) {
-    return {
-      message:
-        "Password must contain at least one special character from [! @ # $ % ^ & *]",
-    };
+    return "Password must contain at least one special character from [! @ # $ % ^ & *]";
   }
 
   const schema = z.object({
@@ -41,9 +37,7 @@ export default async function registerUser(
 
   const result = schema.safeParse(formFields);
   if (!result.success) {
-    return {
-      message: result.error.errors[0].message,
-    };
+    return result.error.errors[0].message;
   }
 
   try {
@@ -54,9 +48,7 @@ export default async function registerUser(
       .exec();
 
     if (existingUser) {
-      return {
-        message: "A user with that email already exists",
-      };
+      return "A user with that email already exists";
     }
 
     const hashedPassword = await bcrypt.hash(formFields.password, 10);
@@ -80,7 +72,7 @@ export default async function registerUser(
       secure: process.env.NODE_ENV === "production",
     });
     revalidatePath("/register");
-    redirect("/", RedirectType.replace);
+    return "success";
   } catch (err) {
     throw err;
   }

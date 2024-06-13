@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 
 const Error = ({
@@ -12,7 +11,7 @@ const Error = ({
   return (
     <section className="min-h-svh flex justify-center items-center">
       <div className="container w-[90%] max-w-[1400px] mx-auto">
-        <h1 className="text-2xl text-center text-error mb-2">
+        <h1 className="text-2xl text-center md:text-start text-error mb-2">
           Whoops! This is awkward
         </h1>
         <p className="mb-2">Message: {error.message}</p>

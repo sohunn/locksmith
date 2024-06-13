@@ -1,11 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { InlineIcon } from "@iconify/react";
 import Link from "next/link";
+import { GlobalContext } from "@/app/contexts/global";
 
 const Navbar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const context = useContext(GlobalContext);
+
+  const handleLogout = async () => {
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+    if (!response.ok) {
+      context?.setAlert({
+        msg: "Something went wrong, try again later",
+        type: "error",
+      });
+
+      return;
+    }
+    context?.setAuthenticated(false);
+  };
 
   return (
     <nav className="py-4 bg-base-200 ">
@@ -63,18 +78,34 @@ const Navbar = () => {
             <li>
               <Link href={"/contact"}>Contact</Link>
             </li>
-            <li>
-              <Link href={"/login"}>
-                <button className="btn btn-primary rounded-md">Login</button>
-              </Link>
-            </li>
-            <li>
-              <Link href={"/register"}>
-                <button className="btn btn-secondary rounded-md">
-                  Register
+
+            {context?.isAuthenticated ? (
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-error rounded-md"
+                >
+                  Logout
                 </button>
-              </Link>
-            </li>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link href={"/login"}>
+                    <button className="btn btn-primary rounded-md">
+                      Login
+                    </button>
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"/register"}>
+                    <button className="btn btn-secondary rounded-md">
+                      Register
+                    </button>
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
 
@@ -93,16 +124,32 @@ const Navbar = () => {
           <li onClick={() => setIsExpanded(false)}>
             <Link href={"/contact"}>Contact</Link>
           </li>
-          <li onClick={() => setIsExpanded(false)}>
-            <Link href={"/login"}>
-              <button className="btn btn-primary rounded-md">Login</button>
-            </Link>
-          </li>
-          <li onClick={() => setIsExpanded(false)}>
-            <Link href={"/register"}>
-              <button className="btn btn-secondary rounded-md">Register</button>
-            </Link>
-          </li>
+
+          {context?.isAuthenticated ? (
+            <li onClick={() => setIsExpanded(false)}>
+              <button
+                onClick={handleLogout}
+                className="btn btn-error rounded-md"
+              >
+                Logout
+              </button>
+            </li>
+          ) : (
+            <>
+              <li onClick={() => setIsExpanded(false)}>
+                <Link href={"/login"}>
+                  <button className="btn btn-primary rounded-md">Login</button>
+                </Link>
+              </li>
+              <li onClick={() => setIsExpanded(false)}>
+                <Link href={"/register"}>
+                  <button className="btn btn-secondary rounded-md">
+                    Register
+                  </button>
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>

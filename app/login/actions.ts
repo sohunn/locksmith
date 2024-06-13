@@ -7,7 +7,6 @@ import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { RedirectType, redirect } from "next/navigation";
 
 export default async function loginUser(_prevState: any, formData: FormData) {
   const formFields = {
@@ -26,9 +25,7 @@ export default async function loginUser(_prevState: any, formData: FormData) {
   const result = schema.safeParse(formFields);
 
   if (!result.success) {
-    return {
-      message: result.error.errors[0].message,
-    };
+    return result.error.errors[0].message;
   }
 
   try {
@@ -39,16 +36,12 @@ export default async function loginUser(_prevState: any, formData: FormData) {
       .exec();
 
     if (!user) {
-      return {
-        message: "Invalid credentials",
-      };
+      return "Invalid credentials";
     }
 
     const match = await compare(formFields.password, user.password);
     if (!match) {
-      return {
-        message: "Invalid credentials",
-      };
+      return "Invalid credentials";
     }
 
     const payload = {
@@ -66,7 +59,7 @@ export default async function loginUser(_prevState: any, formData: FormData) {
     });
 
     revalidatePath("/login");
-    redirect("/", RedirectType.replace);
+    return "success";
   } catch (err) {
     throw err;
   }

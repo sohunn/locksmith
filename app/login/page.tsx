@@ -4,20 +4,23 @@ import React, { useContext, useEffect } from "react";
 import { useFormState } from "react-dom";
 import loginUser from "./actions";
 import { GlobalContext } from "../contexts/global";
-
-const initialState = {
-  message: "",
-};
+import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const [state, formAction] = useFormState(loginUser, initialState);
+  const [statusMsg, formAction] = useFormState(loginUser, null);
   const context = useContext(GlobalContext);
+  const router = useRouter();
 
   useEffect(() => {
-    if (state && state.message.length > 0) {
-      context?.setAlert({ msg: state.message, type: "error" });
+    if (statusMsg) {
+      if (statusMsg !== "success") {
+        context?.setAlert({ msg: statusMsg, type: "error" });
+        return;
+      }
+      context?.setAuthenticated(true);
+      router.push("/");
     }
-  }, []);
+  }, [statusMsg, context, router]);
 
   return (
     <section
