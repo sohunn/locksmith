@@ -1,26 +1,12 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { InlineIcon } from "@iconify/react";
 import Link from "next/link";
-import { GlobalContext } from "@/app/contexts/global";
+import { logout } from "@/app/utils/actions";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn }: { isLoggedIn: boolean | undefined }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const context = useContext(GlobalContext);
-
-  const handleLogout = async () => {
-    const response = await fetch("/api/auth/logout", { method: "POST" });
-    if (!response.ok) {
-      context?.setAlert({
-        msg: "Something went wrong, try again later",
-        type: "error",
-      });
-
-      return;
-    }
-    context?.setAuthenticated(false);
-  };
 
   return (
     <nav className="py-4 bg-base-200 ">
@@ -79,14 +65,13 @@ const Navbar = () => {
               <Link href={"/contact"}>Contact</Link>
             </li>
 
-            {context?.isAuthenticated ? (
+            {isLoggedIn ? (
               <li>
-                <button
-                  onClick={handleLogout}
-                  className="btn btn-error rounded-md"
-                >
-                  Logout
-                </button>
+                <form action={logout}>
+                  <button type="submit" className="btn btn-error rounded-md">
+                    Logout
+                  </button>
+                </form>
               </li>
             ) : (
               <>
@@ -125,14 +110,13 @@ const Navbar = () => {
             <Link href={"/contact"}>Contact</Link>
           </li>
 
-          {context?.isAuthenticated ? (
+          {isLoggedIn ? (
             <li onClick={() => setIsExpanded(false)}>
-              <button
-                onClick={handleLogout}
-                className="btn btn-error rounded-md"
-              >
-                Logout
-              </button>
+              <form action={logout}>
+                <button type="submit" className="btn btn-error rounded-md">
+                  Logout
+                </button>
+              </form>
             </li>
           ) : (
             <>

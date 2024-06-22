@@ -4,14 +4,19 @@ import { z } from "zod";
 import verifyDBConnection from "../database/init";
 import userModel from "../database/models/User";
 import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { getSession } from "../utils/actions";
+import { redirect } from "next/navigation";
 
 export default async function registerUser(
   _prevState: any,
   formData: FormData
-) {
+): Promise<{
+  username?: string[] | undefined;
+  email?: string[] | undefined;
+  password?: string[] | undefined;
+  msg?: string;
+}> {
   const formFields = {
     username: formData.get("username") as string,
     email: formData.get("email") as string,
@@ -20,7 +25,9 @@ export default async function registerUser(
 
   const specialCharRegex = /[!@#$%^&*]/g;
   if (!specialCharRegex.test(formFields.password)) {
-    return "Password must contain at least one special character from [! @ # $ % ^ & *]";
+    return {
+      msg: "Password must contain at least one special character from [! @ # $ % ^ & *]",
+    };
   }
 
   const schema = z.object({
@@ -36,9 +43,7 @@ export default async function registerUser(
   });
 
   const result = schema.safeParse(formFields);
-  if (!result.success) {
-    return result.error.errors[0].message;
-  }
+  if (!result.success) return result.error.flatten().fieldErrors;
 
   try {
     await verifyDBConnection();
@@ -48,7 +53,9 @@ export default async function registerUser(
       .exec();
 
     if (existingUser) {
-      return "A user with that email already exists";
+      return {
+        msg: "A user with that email already exists",
+      };
     }
 
     const hashedPassword = await bcrypt.hash(formFields.password, 10);
@@ -58,21 +65,15 @@ export default async function registerUser(
       username: formFields.username,
     });
 
-    const payload = {
-      id: user._id,
-    };
+    const session = await getSession();
+    session.isLoggedIn = true;
+    session.username = user.username;
+    session.passwords = user.passwords;
+    session.userID = user._id.toString();
 
-    const token = sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: "7d",
-    });
-
-    cookies().set("token", token, {
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-    });
-    revalidatePath("/register");
-    return "success";
+    await session.save();
+    revalidatePath("/");
+    redirect("/");
   } catch (err) {
     throw err;
   }

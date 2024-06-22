@@ -1,25 +1,32 @@
 import { Document, Model, Schema, Types, model, models } from "mongoose";
-import { User } from "../../types";
+import { DatabaseUser } from "../../types";
 
-const userSchema = new Schema<User>({
+const subSchema = new Schema({
+  for: String,
+  value: String,
+  algo: String,
+  key: { type: String, required: false },
+});
+
+const userSchema = new Schema<DatabaseUser>({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
-  passwords: { type: [String] },
+  passwords: [subSchema],
 });
 
 // prevent HMR from overwriting the model
 const userModel =
-  (models.users as Model<
-    User,
+  (models?.users as Model<
+    DatabaseUser,
     {},
     {},
     {},
-    Document<unknown, {}, User> &
-      User & {
+    Document<unknown, {}, DatabaseUser> &
+      DatabaseUser & {
         _id: Types.ObjectId;
       },
     any
-  >) || model<User>("users", userSchema);
+  >) || model<DatabaseUser>("users", userSchema);
 
 export default userModel;

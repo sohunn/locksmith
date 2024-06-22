@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { honk } from "./ui/fonts";
-import Link from "next/link";
 import { Metadata } from "next";
+import WelcomeUser from "./components/WelcomeUser";
+import { getSession } from "./utils/actions";
 
 export const metadata: Metadata = {
   title: "Locksmith - Home",
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
     "Locksmith is a password manager that provides state of the art security by encrypting your passwords the way you want it.",
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
   return (
     <>
       <section className="py-4 md:py-8 bg-accent text-accent-content">
@@ -50,19 +52,7 @@ export default function Home() {
 
       <section className="py-4">
         <div className="container w-[90%] max-w-[1400px] mx-auto">
-          <h1 className="text-2xl text-center md:text-start mb-2">
-            Secure your passwords!
-          </h1>
-          <p>
-            Get started by{" "}
-            <Link className="btn btn-link px-1 text-lg" href={"/register"}>
-              creating an account
-            </Link>
-            or{" "}
-            <Link className="btn btn-link px-1 text-lg" href={"/login"}>
-              logging in
-            </Link>
-          </p>
+          <WelcomeUser session={session} />
         </div>
       </section>
     </>
