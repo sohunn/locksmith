@@ -66,27 +66,31 @@ const Navbar = ({ isLoggedIn }: { isLoggedIn: boolean | undefined }) => {
             </li>
 
             {isLoggedIn ? (
-              <li>
-                <form action={logout}>
-                  <button type="submit" className="btn btn-error rounded-md">
-                    Logout
-                  </button>
-                </form>
-              </li>
+              <>
+                <li>
+                  <Link href={"/profile"}>Profile</Link>
+                </li>
+                <li>
+                  <form action={logout}>
+                    <button type="submit" className="btn btn-error rounded-md">
+                      Logout
+                    </button>
+                  </form>
+                </li>
+              </>
             ) : (
               <>
                 <li>
-                  <Link href={"/login"}>
-                    <button className="btn btn-primary rounded-md">
-                      Login
-                    </button>
+                  <Link className="btn btn-primary rounded-md" href={"/login"}>
+                    Login
                   </Link>
                 </li>
                 <li>
-                  <Link href={"/register"}>
-                    <button className="btn btn-secondary rounded-md">
-                      Register
-                    </button>
+                  <Link
+                    className="btn btn-secondary rounded-md"
+                    href={"/register"}
+                  >
+                    Register
                   </Link>
                 </li>
               </>
@@ -111,13 +115,18 @@ const Navbar = ({ isLoggedIn }: { isLoggedIn: boolean | undefined }) => {
           </li>
 
           {isLoggedIn ? (
-            <li onClick={() => setIsExpanded(false)}>
-              <form action={logout}>
-                <button type="submit" className="btn btn-error rounded-md">
-                  Logout
-                </button>
-              </form>
-            </li>
+            <>
+              <li onClick={() => setIsExpanded(false)}>
+                <Link href={"/profile"}>Profile</Link>
+              </li>
+              <li onClick={() => setIsExpanded(false)}>
+                <form action={logout}>
+                  <button type="submit" className="btn btn-error rounded-md">
+                    Logout
+                  </button>
+                </form>
+              </li>
+            </>
           ) : (
             <>
               <li onClick={() => setIsExpanded(false)}>

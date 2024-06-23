@@ -9,9 +9,11 @@ import { GlobalContext } from "../contexts/global";
 export const Passwords = ({
   passwords,
   userID,
+  securityPin,
 }: {
   passwords: Password[];
   userID: string;
+  securityPin?: number;
 }) => {
   const context = useContext(GlobalContext);
   const copyPassword = async (
@@ -19,6 +21,16 @@ export const Passwords = ({
     key: string,
     algo: AlgorithmsType
   ) => {
+    if (securityPin) {
+      const userPin = prompt(
+        "For added security, enter your security pin to copy this password."
+      );
+
+      if (!userPin) return;
+      if (Number(userPin) !== securityPin)
+        return alert("You entered a wrong security pin. Try again");
+    }
+
     const response = await fetch("/api/getPassword", {
       method: "POST",
       body: JSON.stringify({
@@ -37,7 +49,7 @@ export const Passwords = ({
   };
 
   return (
-    <div className="flex flex-wrap gap-4 items-center">
+    <div className="flex flex-wrap gap-4">
       {passwords?.map((pwd) => {
         return (
           <div
@@ -78,7 +90,7 @@ export const Passwords = ({
           </div>
         );
       })}
-      <Link className="btn btn-primary" href={"/save"}>
+      <Link className="btn btn-primary self-center" href={"/save"}>
         Add new
       </Link>
     </div>

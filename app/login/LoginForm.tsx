@@ -2,6 +2,7 @@
 
 import { useFormState } from "react-dom";
 import loginUser from "./actions";
+import SubmitState from "../components/SubmitState";
 
 const LoginForm = () => {
   const [statusMsg, formAction] = useFormState(loginUser, null);
@@ -66,9 +67,7 @@ const LoginForm = () => {
           )}
 
           <div className="flex justify-center md:justify-start">
-            <button type="submit" className="btn btn-primary">
-              Login
-            </button>
+            <SubmitState action="Login" ongoingAction="Logging in..." />
           </div>
         </form>
 

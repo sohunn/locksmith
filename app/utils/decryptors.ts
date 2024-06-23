@@ -1,4 +1,6 @@
+import Blowfish from "blowfish-node";
 import crypto from "crypto";
+import sjcl from "sjcl";
 
 export const decryptAES = (encrypted: string, key: string) => {
   const textParts = encrypted.split(":");
@@ -25,4 +27,15 @@ export const decrypt3DES = (encrypted: string, key: string) => {
   let decrypted = decipher.update(encrypted, "base64", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
+};
+
+export const decryptBlowfish = (encrypted: string, key: string) => {
+  const bf = new Blowfish(key);
+  return bf.decode<{ password: string }>(encrypted, Blowfish.TYPE.JSON_OBJECT)
+    .password;
+};
+
+export const decryptTwofish = (encrypted: string, key: string) => {
+  const encryptedObject = JSON.parse(encrypted);
+  return sjcl.decrypt(key, encryptedObject);
 };

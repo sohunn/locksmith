@@ -5,7 +5,7 @@ const subSchema = new Schema({
   for: String,
   value: String,
   algo: String,
-  key: { type: String, required: false },
+  key: String,
 });
 
 const userSchema = new Schema<DatabaseUser>({
@@ -13,6 +13,7 @@ const userSchema = new Schema<DatabaseUser>({
   email: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
   passwords: [subSchema],
+  securityPin: { type: Number, required: false },
 });
 
 // prevent HMR from overwriting the model

@@ -2,6 +2,7 @@
 
 import { useFormState } from "react-dom";
 import registerUser from "./actions";
+import SubmitState from "../components/SubmitState";
 
 const RegisterForm = () => {
   const [statusMsg, formAction] = useFormState(registerUser, null);
@@ -89,9 +90,7 @@ const RegisterForm = () => {
           )}
 
           <div className="flex justify-center md:justify-start">
-            <button type="submit" className="btn btn-primary">
-              Register
-            </button>
+            <SubmitState action="Register" ongoingAction="Registering..." />
           </div>
         </form>
         {statusMsg?.msg && (

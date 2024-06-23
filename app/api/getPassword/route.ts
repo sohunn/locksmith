@@ -1,7 +1,16 @@
 import { AlgorithmsType } from "@/app/types";
-import { decrypt3DES, decryptAES } from "@/app/utils/decryptors";
+import { getSession } from "@/app/utils/actions";
+import {
+  decrypt3DES,
+  decryptAES,
+  decryptBlowfish,
+  decryptTwofish,
+} from "@/app/utils/decryptors";
 
 export const POST = async (request: Request) => {
+  const session = await getSession();
+  if (!session.isLoggedIn) return new Response("Unauthorized", { status: 401 });
+
   const {
     value,
     key,
@@ -22,8 +31,12 @@ export const POST = async (request: Request) => {
       break;
     }
 
-    default: {
-      decrypted = "Hello world!";
+    case "Blowfish": {
+      decrypted = decryptBlowfish(value, key);
+    }
+
+    case "Twofish": {
+      decrypted = decryptTwofish(value, key);
     }
   }
 

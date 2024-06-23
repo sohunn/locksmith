@@ -3,13 +3,14 @@ export type DatabaseUser = {
   email: string;
   password: string;
   passwords: Password[];
+  securityPin?: number;
 };
 
 export type Password = {
   for: string;
   value: string;
   algo: AlgorithmsType;
-  key?: string;
+  key: string;
 };
 
 export type AlertStruct = {
@@ -22,6 +23,8 @@ export type SessionDetails = {
   username?: string;
   passwords?: Password[];
   userID?: string;
+  email?: string;
+  securityPin?: number;
 };
 
 export const Algorithms: AlgorithmsType[] = [

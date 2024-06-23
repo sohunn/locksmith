@@ -2,12 +2,18 @@
 
 import crypto from "crypto";
 import { AlgorithmsType } from "../types";
-import { encrypt3DES, encryptAES } from "../utils/encryptors";
+import {
+  encrypt3DES,
+  encryptAES,
+  encryptBlowfish,
+  encryptTwofish,
+} from "../utils/encryptors";
 import { getSession } from "../utils/actions";
 import userModel from "../database/models/User";
 import { RedirectType, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import verifyDBConnection from "../database/init";
+import sjcl from "sjcl";
 
 export const savePassword = async (formData: FormData) => {
   const session = await getSession();
@@ -77,6 +83,59 @@ export const savePassword = async (formData: FormData) => {
     }
 
     case "Blowfish": {
+      const key = crypto.randomBytes(32).toString("hex");
+      const encrypted = encryptBlowfish(formFields.password, key);
+
+      const passwordInfo = {
+        algo: formFields.algorithm,
+        for: formFields.name,
+        value: encrypted,
+        key,
+      };
+
+      session.passwords?.push(passwordInfo);
+      await Promise.all([
+        userModel.findByIdAndUpdate(
+          session.userID,
+          {
+            $push: { passwords: passwordInfo },
+          },
+          { upsert: true }
+        ),
+        session.save(),
+      ]);
+
+      revalidatePath("/");
+      redirect("/");
+    }
+
+    case "Twofish": {
+      const random = sjcl.random.randomWords(256 / 4);
+      const key = sjcl.codec.hex.fromBits(random);
+
+      const encrypted = encryptTwofish(formFields.password, key);
+
+      const passwordInfo = {
+        algo: formFields.algorithm,
+        for: formFields.name,
+        value: encrypted,
+        key,
+      };
+
+      session.passwords?.push(passwordInfo);
+      await Promise.all([
+        userModel.findByIdAndUpdate(
+          session.userID,
+          {
+            $push: { passwords: passwordInfo },
+          },
+          { upsert: true }
+        ),
+        session.save(),
+      ]);
+
+      revalidatePath("/");
+      redirect("/");
     }
   }
 };

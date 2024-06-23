@@ -19,7 +19,11 @@ const WelcomeUser = ({ session }: { session: IronSession<SessionDetails> }) => {
         <h2 className="mb-2">Your passwords 🔐</h2>
 
         {session.passwords && session.passwords.length > 0 ? (
-          <Passwords passwords={session.passwords} userID={session.userID!} />
+          <Passwords
+            passwords={session.passwords}
+            userID={session.userID!}
+            securityPin={session.securityPin}
+          />
         ) : (
           <p>
             You have no passwords saved.{" "}

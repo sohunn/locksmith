@@ -1,4 +1,6 @@
+import Blowfish from "blowfish-node";
 import crypto from "crypto";
+import sjcl from "sjcl";
 
 export const encryptAES = (text: string, key: string) => {
   // option for choosing random bytes for the iv
@@ -25,4 +27,13 @@ export const encrypt3DES = (text: string, key: string) => {
   let encrypted = cipher.update(text, "utf8", "base64");
   encrypted += cipher.final("base64");
   return encrypted;
+};
+
+export const encryptBlowfish = (text: string, key: string) => {
+  const bf = new Blowfish(key);
+  return bf.encodeToBase64(JSON.stringify({ password: text }));
+};
+
+export const encryptTwofish = (text: string, key: string) => {
+  return JSON.stringify(sjcl.encrypt(key, text));
 };

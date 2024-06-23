@@ -3,7 +3,7 @@
 import React from "react";
 import { savePassword } from "./actions";
 import { Algorithms } from "../types";
-import CustomSubmit from "./CustomSubmit";
+import SubmitState from "../components/SubmitState";
 
 const SaveForm = () => {
   return (
@@ -42,7 +42,7 @@ const SaveForm = () => {
       </select>
 
       <div className="flex justify-center md:justify-start">
-        <CustomSubmit />
+        <SubmitState />
       </div>
     </form>
   );

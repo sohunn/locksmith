@@ -70,6 +70,8 @@ export default async function registerUser(
     session.username = user.username;
     session.passwords = user.passwords;
     session.userID = user._id.toString();
+    session.email = user.email;
+    session.securityPin = user.securityPin;
 
     await session.save();
     revalidatePath("/");

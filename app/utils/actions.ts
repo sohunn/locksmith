@@ -51,3 +51,62 @@ export const deletePassword = async (formData: FormData) => {
 
   revalidatePath("/");
 };
+
+export const saveSecurityPin = async (formData: FormData) => {
+  const formFields = {
+    userID: formData.get("userID") as string,
+    securityPin: formData.get("securityPin") as string,
+  };
+
+  const session = await getSession();
+  if (!session.isLoggedIn) return redirect("/login");
+
+  session.securityPin = Number(formFields.securityPin);
+  await verifyDBConnection();
+
+  await Promise.all([
+    userModel.findByIdAndUpdate(
+      formFields.userID,
+      {
+        $set: { securityPin: Number(formFields.securityPin) },
+      },
+      { upsert: true }
+    ),
+    session.save(),
+  ]);
+
+  revalidatePath("/profile");
+};
+
+// essentially the same function as save but different function signatures, this is intentional - Sohan
+export const updateSecurityPin = async (
+  _prevState: any,
+  formData: FormData
+) => {
+  const formFields = {
+    userID: formData.get("userID") as string,
+    securityPin: formData.get("securityPin") as string,
+  };
+
+  const session = await getSession();
+  if (!session.isLoggedIn) return redirect("/login");
+
+  session.securityPin = Number(formFields.securityPin);
+  await verifyDBConnection();
+
+  await Promise.all([
+    userModel.findByIdAndUpdate(
+      formFields.userID,
+      {
+        $set: { securityPin: Number(formFields.securityPin) },
+      },
+      { upsert: true }
+    ),
+    session.save(),
+  ]);
+
+  revalidatePath("/profile");
+  return {
+    msg: "Security Pin Updated",
+  };
+};
